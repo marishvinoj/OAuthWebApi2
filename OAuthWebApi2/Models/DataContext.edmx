@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="OauthApiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="ApiUsers">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="20" />
+          <Property Name="UserPasswd" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="User_Roles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="User_id" Type="int" Nullable="false" />
+          <Property Name="Role_id" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_ApiUsers_Roles_Role_id">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="1" />
+          <End Role="User_Roles" Type="Self.User_Roles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User_Roles">
+              <PropertyRef Name="Role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ApiUsers_User_Roles">
+          <End Role="ApiUsers" Type="Self.ApiUsers" Multiplicity="1" />
+          <End Role="User_Roles" Type="Self.User_Roles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiUsers">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="User_Roles">
+              <PropertyRef Name="User_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="OauthApiModelStoreContainer">
+          <EntitySet Name="ApiUsers" EntityType="Self.ApiUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User_Roles" EntityType="Self.User_Roles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_ApiUsers_Roles_Role_id" Association="Self.FK_ApiUsers_Roles_Role_id">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="User_Roles" EntitySet="User_Roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ApiUsers_User_Roles" Association="Self.FK_ApiUsers_User_Roles">
+            <End Role="ApiUsers" EntitySet="ApiUsers" />
+            <End Role="User_Roles" EntitySet="User_Roles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OauthApiModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="ApiUser">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="UserPasswd" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User_Roles" Relationship="Self.FK_ApiUsers_User_Roles" FromRole="ApiUsers" ToRole="User_Roles" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User_Roles" Relationship="Self.FK_ApiUsers_Roles_Role_id" FromRole="Roles" ToRole="User_Roles" />
+        </EntityType>
+        <EntityType Name="User_Roles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="User_id" Type="Int32" Nullable="false" />
+          <Property Name="Role_id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ApiUser" Relationship="Self.FK_ApiUsers_User_Roles" FromRole="User_Roles" ToRole="ApiUsers" />
+          <NavigationProperty Name="Role" Relationship="Self.FK_ApiUsers_Roles_Role_id" FromRole="User_Roles" ToRole="Roles" />
+        </EntityType>
+        <Association Name="FK_ApiUsers_User_Roles">
+          <End Role="ApiUsers" Type="Self.ApiUser" Multiplicity="1" />
+          <End Role="User_Roles" Type="Self.User_Roles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ApiUsers">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="User_Roles">
+              <PropertyRef Name="User_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ApiUsers_Roles_Role_id">
+          <End Role="Roles" Type="Self.Role" Multiplicity="1" />
+          <End Role="User_Roles" Type="Self.User_Roles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="User_Roles">
+              <PropertyRef Name="Role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="OauthApiEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="ApiUsers" EntityType="Self.ApiUser" />
+          <EntitySet Name="Roles" EntityType="Self.Role" />
+          <EntitySet Name="User_Roles" EntityType="Self.User_Roles" />
+          <AssociationSet Name="FK_ApiUsers_User_Roles" Association="Self.FK_ApiUsers_User_Roles">
+            <End Role="ApiUsers" EntitySet="ApiUsers" />
+            <End Role="User_Roles" EntitySet="User_Roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ApiUsers_Roles_Role_id" Association="Self.FK_ApiUsers_Roles_Role_id">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="User_Roles" EntitySet="User_Roles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OauthApiModelStoreContainer" CdmEntityContainer="OauthApiEntities">
+          <EntitySetMapping Name="ApiUsers">
+            <EntityTypeMapping TypeName="OauthApiModel.ApiUser">
+              <MappingFragment StoreEntitySet="ApiUsers">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserPasswd" ColumnName="UserPasswd" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="OauthApiModel.Role">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User_Roles">
+            <EntityTypeMapping TypeName="OauthApiModel.User_Roles">
+              <MappingFragment StoreEntitySet="User_Roles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="User_id" ColumnName="User_id" />
+                <ScalarProperty Name="Role_id" ColumnName="Role_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
