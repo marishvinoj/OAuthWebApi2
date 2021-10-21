@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using OAuthWebApi2.Filters;
 using Repository;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Web.Http;
 
 namespace OAuthWebApi2.Controllers
 {
+    [CustomAuthorize]
     public class ValuesController : ApiController
     {
         private UnitOfWork<CustomerDbEntities> unitOfWork = new UnitOfWork<CustomerDbEntities>();
@@ -27,7 +29,10 @@ namespace OAuthWebApi2.Controllers
         }
 
         //This resource is For all types of role
-        [Authorize(Roles = "SuperAdmin, Admin, User")]
+        //[CustomAuthorize("User")]
+        //[Authorize(Roles = "SuperAdmin, Admin, User")]
+
+        //[CustomAuthorize]
         [HttpGet]
         [Route("api/values/getvalues")]
         public IHttpActionResult GetValues()

@@ -38,8 +38,9 @@ namespace OAuthWebApi2
             {
                 AllowInsecureHttp = true,
                 TokenEndpointPath = new PathString("/token"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromMinutes(30),//token expiration time
-                Provider = new OauthProvider()
+                AccessTokenExpireTimeSpan = TimeSpan.FromSeconds(60),//token expiration time
+                Provider = new OauthProvider(),
+                RefreshTokenProvider = new ApplicationRefreshTokenProvider()
             };
 
             //app.UseOAuthBearerTokens(OAuthOptions);
@@ -50,4 +51,5 @@ namespace OAuthWebApi2
             WebApiConfig.Register(config);//register the request
         }
     }
+
 }
