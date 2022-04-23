@@ -173,6 +173,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataContext.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Employee.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Role.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>

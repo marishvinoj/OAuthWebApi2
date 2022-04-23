@@ -26,6 +26,7 @@ namespace OAuthWebApi2.Models
         }
     
         public virtual DbSet<ApiUser> ApiUsers { get; set; }
+        public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<User_Roles> User_Roles { get; set; }
     }

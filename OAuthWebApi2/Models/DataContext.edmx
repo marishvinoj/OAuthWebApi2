@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="OauthApiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="OauthApiModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ApiUsers">
           <Key>
             <PropertyRef Name="UserId" />
@@ -12,6 +12,15 @@
           <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="20" />
           <Property Name="UserPasswd" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="EmpId" />
+          </Key>
+          <Property Name="EmpId" Type="int" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Gender" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Roles">
           <Key>
@@ -54,6 +63,7 @@
         </Association>
         <EntityContainer Name="OauthApiModelStoreContainer">
           <EntitySet Name="ApiUsers" EntityType="Self.ApiUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Roles" EntityType="Self.User_Roles" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_ApiUsers_Roles_Role_id" Association="Self.FK_ApiUsers_Roles_Role_id">
@@ -65,11 +75,24 @@
             <End Role="User_Roles" EntitySet="User_Roles" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="OauthApiModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="OauthApiEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="ApiUsers" EntityType="OauthApiModel.ApiUser" />
+          <EntitySet Name="Employees" EntityType="OauthApiModel.Employee" />
+          <EntitySet Name="Roles" EntityType="OauthApiModel.Role" />
+          <EntitySet Name="User_Roles" EntityType="OauthApiModel.User_Roles" />
+          <AssociationSet Name="FK_ApiUsers_User_Roles" Association="OauthApiModel.FK_ApiUsers_User_Roles">
+            <End Role="ApiUser" EntitySet="ApiUsers" />
+            <End Role="User_Roles" EntitySet="User_Roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ApiUsers_Roles_Role_id" Association="OauthApiModel.FK_ApiUsers_Roles_Role_id">
+            <End Role="Role" EntitySet="Roles" />
+            <End Role="User_Roles" EntitySet="User_Roles" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="ApiUser">
           <Key>
             <PropertyRef Name="UserId" />
@@ -77,7 +100,16 @@
           <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="UserPasswd" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="User_Roles" Relationship="Self.FK_ApiUsers_User_Roles" FromRole="ApiUsers" ToRole="User_Roles" />
+          <NavigationProperty Name="User_Roles" Relationship="OauthApiModel.FK_ApiUsers_User_Roles" FromRole="ApiUser" ToRole="User_Roles" />
+        </EntityType>
+        <EntityType Name="Employee">
+          <Key>
+            <PropertyRef Name="EmpId" />
+          </Key>
+          <Property Name="EmpId" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Gender" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -85,7 +117,7 @@
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="User_Roles" Relationship="Self.FK_ApiUsers_Roles_Role_id" FromRole="Roles" ToRole="User_Roles" />
+          <NavigationProperty Name="User_Roles" Relationship="OauthApiModel.FK_ApiUsers_Roles_Role_id" FromRole="Role" ToRole="User_Roles" />
         </EntityType>
         <EntityType Name="User_Roles">
           <Key>
@@ -94,14 +126,14 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="User_id" Type="Int32" Nullable="false" />
           <Property Name="Role_id" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="ApiUser" Relationship="Self.FK_ApiUsers_User_Roles" FromRole="User_Roles" ToRole="ApiUsers" />
-          <NavigationProperty Name="Role" Relationship="Self.FK_ApiUsers_Roles_Role_id" FromRole="User_Roles" ToRole="Roles" />
+          <NavigationProperty Name="ApiUser" Relationship="OauthApiModel.FK_ApiUsers_User_Roles" FromRole="User_Roles" ToRole="ApiUser" />
+          <NavigationProperty Name="Role" Relationship="OauthApiModel.FK_ApiUsers_Roles_Role_id" FromRole="User_Roles" ToRole="Role" />
         </EntityType>
         <Association Name="FK_ApiUsers_User_Roles">
-          <End Role="ApiUsers" Type="Self.ApiUser" Multiplicity="1" />
-          <End Role="User_Roles" Type="Self.User_Roles" Multiplicity="*" />
+          <End Type="OauthApiModel.ApiUser" Role="ApiUser" Multiplicity="1" />
+          <End Type="OauthApiModel.User_Roles" Role="User_Roles" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="ApiUsers">
+            <Principal Role="ApiUser">
               <PropertyRef Name="UserId" />
             </Principal>
             <Dependent Role="User_Roles">
@@ -110,10 +142,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ApiUsers_Roles_Role_id">
-          <End Role="Roles" Type="Self.Role" Multiplicity="1" />
-          <End Role="User_Roles" Type="Self.User_Roles" Multiplicity="*" />
+          <End Type="OauthApiModel.Role" Role="Role" Multiplicity="1" />
+          <End Type="OauthApiModel.User_Roles" Role="User_Roles" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Roles">
+            <Principal Role="Role">
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="User_Roles">
@@ -121,19 +153,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="OauthApiEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="ApiUsers" EntityType="Self.ApiUser" />
-          <EntitySet Name="Roles" EntityType="Self.Role" />
-          <EntitySet Name="User_Roles" EntityType="Self.User_Roles" />
-          <AssociationSet Name="FK_ApiUsers_User_Roles" Association="Self.FK_ApiUsers_User_Roles">
-            <End Role="ApiUsers" EntitySet="ApiUsers" />
-            <End Role="User_Roles" EntitySet="User_Roles" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ApiUsers_Roles_Role_id" Association="Self.FK_ApiUsers_Roles_Role_id">
-            <End Role="Roles" EntitySet="Roles" />
-            <End Role="User_Roles" EntitySet="User_Roles" />
-          </AssociationSet>
-        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -143,26 +162,36 @@
           <EntitySetMapping Name="ApiUsers">
             <EntityTypeMapping TypeName="OauthApiModel.ApiUser">
               <MappingFragment StoreEntitySet="ApiUsers">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="UserPasswd" ColumnName="UserPasswd" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Employees">
+            <EntityTypeMapping TypeName="OauthApiModel.Employee">
+              <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="EmpId" ColumnName="EmpId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Roles">
             <EntityTypeMapping TypeName="OauthApiModel.Role">
               <MappingFragment StoreEntitySet="Roles">
-                <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="User_Roles">
             <EntityTypeMapping TypeName="OauthApiModel.User_Roles">
               <MappingFragment StoreEntitySet="User_Roles">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="User_id" ColumnName="User_id" />
                 <ScalarProperty Name="Role_id" ColumnName="Role_id" />
+                <ScalarProperty Name="User_id" ColumnName="User_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
